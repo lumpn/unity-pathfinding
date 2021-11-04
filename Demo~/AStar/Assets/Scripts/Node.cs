@@ -1,10 +1,9 @@
 ﻿public class Node
 {
-    internal object[] position;
-    private string v;
+    public readonly string name;
 
-    public Node(string v)
+    public Node(string name)
     {
-        this.v = v;
+        this.name = name;
     }
 }

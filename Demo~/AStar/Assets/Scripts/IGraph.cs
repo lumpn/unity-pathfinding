@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public interface IGraph
 {
-    IEnumerable<Node> GetNodes();
+    int nodeCount { get; }
+
     IEnumerable<Edge> GetEdges(int idx);
 }

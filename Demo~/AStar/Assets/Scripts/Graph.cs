@@ -1,35 +1,34 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class Graph : IGraph
 {
-    public Graph()
+    private readonly List<Edge> emptyList = new List<Edge>();
+
+    private readonly List<Node> nodes = new List<Node>();
+
+    private readonly Dictionary<int, List<Edge>> edges = new Dictionary<int, List<Edge>>();
+
+    public int nodeCount => nodes.Count;
+
+    public int AddNode(Node node)
     {
+        nodes.Add(node);
+        return nodes.Count;
     }
 
-    internal int AddNode(Node n1)
+    public void AddEdge(int sourceId, int targetId, float cost)
     {
-        throw new NotImplementedException();
+        var nodeEdges = edges.GetOrAddNew(sourceId);
+        nodeEdges.Add(new Edge(targetId, cost));
     }
 
-    internal void AddEdge(int idx1, int idx2, float v)
+    public Node GetNode(int id)
     {
-        throw new NotImplementedException();
+        return nodes[id];
     }
 
-    public IEnumerable<Node> GetNodes()
+    public IEnumerable<Edge> GetEdges(int nodeId)
     {
-        throw new NotImplementedException();
-    }
-
-    internal Node GetNode(int idx)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Edge> GetEdges(int idx)
-    {
-        throw new NotImplementedException();
+        return edges.GetOrDefault(nodeId, emptyList);
     }
 }

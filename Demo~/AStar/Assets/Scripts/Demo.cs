@@ -1,8 +1,6 @@
 using UnityEngine;
-using System.Linq;
-using System.Diagnostics.Contracts;
 
-public class NewBehaviourScript : MonoBehaviour
+public class Demo : MonoBehaviour
 {
     void Start()
     {
@@ -21,7 +19,7 @@ public class NewBehaviourScript : MonoBehaviour
         foreach (var idx in path)
         {
             var node = graph.GetNode(idx);
-            Debug.LogFormat("Node {0}", node.position);
+            Debug.LogFormat("Node {0}", node.name);
         }
     }
 
@@ -29,5 +27,4 @@ public class NewBehaviourScript : MonoBehaviour
     {
         return 0f;
     }
-
 }

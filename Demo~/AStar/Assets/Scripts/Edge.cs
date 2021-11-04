@@ -1,5 +1,11 @@
-﻿public class Edge
+﻿public struct Edge
 {
-    internal int idx;
-    internal float cost;
+    public readonly int target;
+    public readonly float cost;
+
+    public Edge(int target, float cost)
+    {
+        this.target = target;
+        this.cost = cost;
+    }
 }

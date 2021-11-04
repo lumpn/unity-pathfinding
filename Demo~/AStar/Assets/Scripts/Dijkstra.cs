@@ -1,62 +1,97 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Lumpn.Graph;
 using UnityEngine;
 
-public class Dijkstra : MonoBehaviour
+namespace Lumpn.Graph
 {
-    internal class SearchNode
+    public sealed class Dijkstra
     {
-        internal float cost;
-        internal bool explored;
-        internal SearchNode parent;
-        internal int idx;
-    }
-
-    public Path Search(IGraph graph, int idx1, int idx2)
-    {
-        var searchNodes = graph.GetNodes().Select(p => new SearchNode()).ToArray();
-
-        var frontier = new PriorityQueue<int>();
-        frontier.Enqueue(idx1, 0);
-
-        while (frontier.Count > 0)
+        private struct Node
         {
-            var idx = frontier.Dequeue();
-            var node = searchNodes[idx];
+            public readonly int id;
+            public int parent;
+            public bool explored;
 
-            if (idx == idx2)
+            public Node(int id)
             {
-                return ReconstructPath(node);
+                this.id = id;
+                this.parent = -1;
+                this.explored = false;
             }
+        }
 
-            if (node.explored) continue;
-            node.explored = true;
+        private struct HeapEntry
+        {
+            public readonly int nodeId;
+            public readonly float cost;
 
-            foreach (var edge in graph.GetEdges(idx))
+            public HeapEntry(int nodeId, float cost)
             {
-                var dest = edge.idx;
-                var destNode = searchNodes[dest];
-                if (!destNode.explored)
+                this.nodeId = nodeId;
+                this.cost = cost;
+            }
+        }
+
+        private sealed class HeapEntryComparer : IComparer<HeapEntry>
+        {
+            private static readonly IComparer<float> costComparer = Comparer<float>.Default;
+
+            public int Compare(HeapEntry x, HeapEntry y)
+            {
+                return costComparer.Compare(x.cost, y.cost);
+            }
+        }
+
+        private static readonly HeapEntryComparer comparer = new HeapEntryComparer();
+
+        public Path Search(IGraph graph, int startId, int destinationId)
+        {
+            var nodes = Enumerable.Range(0, graph.nodeCount).Select(id => new Node(id)).ToArray();
+
+            var frontier = new Heap<HeapEntry>(comparer, graph.nodeCount);
+            frontier.Push(new HeapEntry(startId, 0f));
+
+            while (frontier.Count > 0)
+            {
+                var entry = frontier.Pop();
+                var id = entry.nodeId;
+                if (id == destinationId)
                 {
-                    var cost = node.cost + edge.cost;
-                    destNode.cost = cost;
-                    destNode.parent = node;
-                    frontier.Enqueue(dest, cost);
+                    return ReconstructPath(nodes, id);
+                }
+
+                var node = nodes[id];
+                if (node.explored) continue;
+                node.explored = true;
+                nodes[id] = node;
+
+                foreach (var edge in graph.GetEdges(id))
+                {
+                    var targetId = edge.target;
+                    var targetNode = nodes[targetId];
+                    if (!targetNode.explored)
+                    {
+                        var cost = entry.cost + edge.cost;
+                        targetNode.parent = id;
+                        nodes[targetId] = targetNode;
+                        frontier.Push(new HeapEntry(targetId, cost));
+                    }
                 }
             }
+
+            return null;
         }
 
-        return null;
-    }
-
-    private static Path ReconstructPath(SearchNode node)
-    {
-        var path = new Path(node.cost);
-        for (var current = node; current != null; current = current.parent)
+        private static Path ReconstructPath(Node[] nodes, int id)
         {
-            path.Add(current.idx);
+            var path = new Path(node.cost);
+            for (var current = node.id; current >= 0; current = current.parent)
+            {
+                path.Add(current.idx);
+            }
+            return path;
         }
-        return path;
     }
 }
