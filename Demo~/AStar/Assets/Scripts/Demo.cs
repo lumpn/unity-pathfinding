@@ -2,6 +2,7 @@
 // MIT License
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
+using System.Collections;
 using System.Collections.Generic;
 using Lumpn.Graph;
 using UnityEngine;
@@ -29,8 +30,7 @@ public class Demo : MonoBehaviour
         return nodes[id];
     }
 
-    [ContextMenu(nameof(Start))]
-    void Start()
+    IEnumerator Start()
     {
         var grid = new Node[gridSize.x, gridSize.y];
         for (int x = 0; x < gridSize.x; x++)
@@ -56,15 +56,15 @@ public class Demo : MonoBehaviour
                 {
                     graph.AddEdge(grid[x - 1, y].id, grid[x, y].id, 1f);
 
-                    var position = new Vector3(x - 1, y, 0);
-                    Object.Instantiate(horizontalEdgePrefab, position, Quaternion.identity, gridGo.transform);
+                    //var position = new Vector3(x - 1, y, 0);
+                    //Object.Instantiate(horizontalEdgePrefab, position, Quaternion.identity, gridGo.transform);
                 }
                 if (y > 0 && Random.value < edgeProbability)
                 {
                     graph.AddEdge(grid[x, y - 1].id, grid[x, y].id, 1f);
 
-                    var position = new Vector3(x, y - 1, 0);
-                    Object.Instantiate(verticalEdgePrefab, position, Quaternion.identity, gridGo.transform);
+                    //var position = new Vector3(x, y - 1, 0);
+                    //Object.Instantiate(verticalEdgePrefab, position, Quaternion.identity, gridGo.transform);
                 }
             }
         }
@@ -73,19 +73,35 @@ public class Demo : MonoBehaviour
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
         var sampler = CustomSampler.Create("Search", false);
+        Debug.Assert(sampler.isValid);
+
         var recorder = sampler.GetRecorder();
+        Debug.Assert(recorder.isValid);
+
+        recorder.enabled = true;
+        recorder.CollectFromAllThreads();
+
+        yield return null;
+
         sampler.Begin(this);
 
         var algorithm = new Dijkstra();
         var path = algorithm.Search(graph, start.id, end.id);
 
         sampler.End();
-        Debug.LogFormat("Search took {0} ns", recorder.elapsedNanoseconds);
+
+        yield return null;
+
+        Debug.Assert(sampler.isValid);
+        Debug.Assert(recorder.isValid);
+        Debug.Assert(recorder.sampleBlockCount > 0);
+
+        Debug.LogFormat("Search took {0} ms", recorder.elapsedNanoseconds / 1000);
 
         if (path == null)
         {
             Debug.Log("No path");
-            return;
+            yield break;
         }
 
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
