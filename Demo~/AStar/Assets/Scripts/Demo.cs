@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Lumpn.Graph;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class Demo : MonoBehaviour
 {
@@ -30,7 +29,8 @@ public class Demo : MonoBehaviour
         return nodes[id];
     }
 
-    IEnumerator Start()
+    [ContextMenu(nameof(Start))]
+    void Start()
     {
         var grid = new Node[gridSize.x, gridSize.y];
         for (int x = 0; x < gridSize.x; x++)
@@ -72,36 +72,20 @@ public class Demo : MonoBehaviour
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
-        var sampler = CustomSampler.Create("Search", false);
-        Debug.Assert(sampler.isValid);
-
-        var recorder = sampler.GetRecorder();
-        Debug.Assert(recorder.isValid);
-
-        recorder.enabled = true;
-        recorder.CollectFromAllThreads();
-
-        yield return null;
-
-        sampler.Begin(this);
+        var stopwatch = new System.Diagnostics.Stopwatch();
+        stopwatch.Start();
 
         var algorithm = new Dijkstra();
         var path = algorithm.Search(graph, start.id, end.id);
 
-        sampler.End();
+        stopwatch.Stop();
 
-        yield return null;
-
-        Debug.Assert(sampler.isValid);
-        Debug.Assert(recorder.isValid);
-        Debug.Assert(recorder.sampleBlockCount > 0);
-
-        Debug.LogFormat("Search took {0} ms", recorder.elapsedNanoseconds / 1000);
+        Debug.LogFormat("Search took {0} ms", stopwatch.ElapsedMilliseconds);
 
         if (path == null)
         {
             Debug.Log("No path");
-            yield break;
+            return;
         }
 
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
