@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿//----------------------------------------
+// MIT License
+// Copyright(c) 2021 Jonas Boetel
+//----------------------------------------
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Lumpn.Graph

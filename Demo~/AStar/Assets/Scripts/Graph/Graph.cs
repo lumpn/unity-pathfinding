@@ -10,28 +10,19 @@ namespace Lumpn.Graph
     {
         private readonly List<Edge> emptyList = new List<Edge>();
 
-        private readonly List<Node> nodes = new List<Node>();
-
         private readonly Dictionary<int, List<Edge>> edges = new Dictionary<int, List<Edge>>();
 
-        public int nodeCount => nodes.Count;
+        public int nodeCount { get; private set; }
 
-        public int AddNode(Node node)
+        public Graph(int nodeCount)
         {
-            var id = nodes.Count;
-            nodes.Add(node);
-            return id;
+            this.nodeCount = nodeCount;
         }
 
         public void AddEdge(int sourceId, int targetId, float cost)
         {
             var nodeEdges = edges.GetOrAddNew(sourceId);
             nodeEdges.Add(new Edge(targetId, cost));
-        }
-
-        public Node GetNode(int id)
-        {
-            return nodes[id];
         }
 
         public IEnumerable<Edge> GetEdges(int nodeId)

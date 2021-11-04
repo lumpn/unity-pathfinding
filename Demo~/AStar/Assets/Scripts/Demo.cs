@@ -2,30 +2,102 @@
 // MIT License
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
+using System.Collections.Generic;
 using Lumpn.Graph;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class Demo : MonoBehaviour
 {
+    [SerializeField] private Vector2Int gridSize;
+    [SerializeField] private GameObject horizontalEdgePrefab;
+    [SerializeField] private GameObject verticalEdgePrefab;
+    [SerializeField, Range(0, 1)] private float edgeProbability;
+
+    private readonly List<Node> nodes = new List<Node>();
+
+    public Node CreateNode(int x, int y)
+    {
+        var id = nodes.Count;
+        var node = new Node(id, $"{x}, {y}", new Vector3(x, y, 0));
+        nodes.Add(node);
+        return node;
+    }
+
+    public Node GetNode(int id)
+    {
+        return nodes[id];
+    }
+
     [ContextMenu(nameof(Start))]
     void Start()
     {
-        var n1 = new Node("Start");
-        var n2 = new Node("End");
+        var grid = new Node[gridSize.x, gridSize.y];
+        for (int x = 0; x < gridSize.x; x++)
+        {
+            for (int y = 0; y < gridSize.y; y++)
+            {
+                var node = CreateNode(x, y);
+                grid[x, y] = node;
+            }
+        }
 
-        var graph = new Graph();
-        var idx1 = graph.AddNode(n1);
-        var idx2 = graph.AddNode(n2);
-        graph.AddEdge(idx1, idx2, 5f);
+        var gridGo = new GameObject("Grid")
+        {
+            hideFlags = HideFlags.DontSave
+        };
+
+        var graph = new Graph(nodes.Count);
+        for (int x = 0; x < gridSize.x; x++)
+        {
+            for (int y = 0; y < gridSize.y; y++)
+            {
+                if (x > 0 && Random.value < edgeProbability)
+                {
+                    graph.AddEdge(grid[x - 1, y].id, grid[x, y].id, 1f);
+
+                    var position = new Vector3(x - 1, y, 0);
+                    Object.Instantiate(horizontalEdgePrefab, position, Quaternion.identity, gridGo.transform);
+                }
+                if (y > 0 && Random.value < edgeProbability)
+                {
+                    graph.AddEdge(grid[x, y - 1].id, grid[x, y].id, 1f);
+
+                    var position = new Vector3(x, y - 1, 0);
+                    Object.Instantiate(verticalEdgePrefab, position, Quaternion.identity, gridGo.transform);
+                }
+            }
+        }
+
+        var start = grid[0, 0];
+        var end = grid[gridSize.x - 1, gridSize.y - 1];
+
+        var sampler = CustomSampler.Create("Search", false);
+        var recorder = sampler.GetRecorder();
+        sampler.Begin(this);
 
         var algorithm = new Dijkstra();
-        var path = algorithm.Search(graph, idx1, idx2);
+        var path = algorithm.Search(graph, start.id, end.id);
+
+        sampler.End();
+        Debug.LogFormat("Search took {0} ns", recorder.elapsedNanoseconds);
+
+        if (path == null)
+        {
+            Debug.Log("No path");
+            return;
+        }
+
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
 
-        foreach (var idx in path)
+        var pathGo = new GameObject("Path");
+        foreach (var id in path)
         {
-            var node = graph.GetNode(idx);
-            Debug.LogFormat("Node {0}", node.name);
+            var node = GetNode(id);
+
+            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.SetParent(pathGo.transform, false);
+            sphere.transform.localPosition = node.position;
         }
     }
 
