@@ -23,23 +23,24 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
-    private static object SearchDijkstra(IGraph graph, int idx1, int idx2)
+    private static List<int> SearchDijkstra(IGraph graph, int idx1, int idx2)
     {
         var searchNodes = graph.GetNodes().Select(p => new SearchNode()).ToArray();
 
         var frontier = new PriorityQueue<int>();
-        frontier.Enqueue(idx1);
-        searchNodes[idx1].explored = true;
+        frontier.Enqueue(idx1, 0);
 
         while (frontier.Count > 0)
         {
             var idx = frontier.Dequeue();
+            var node = searchNodes[idx];
+
             if (idx == idx2)
             {
-                return true; // TODO Jonas: reconstruct path
+                return ReconstructPath(node);
             }
 
-            var node = searchNodes[idx];
+            if (node.explored) continue;
             node.explored = true;
 
             foreach (var edge in graph.GetEdges(idx))
@@ -49,10 +50,23 @@ public class NewBehaviourScript : MonoBehaviour
                 if (!destNode.explored)
                 {
                     var cost = node.cost + edge.cost;
-                    frontier.Enqueue(dest);
+                    destNode.cost = cost;
+                    destNode.parent = node;
+                    frontier.Enqueue(dest, cost);
                 }
             }
         }
+    }
+
+    private static List<int> ReconstructPath(SearchNode node)
+    {
+        var path = new List<int>();
+        for (var current = node; current != null; current = current.parent)
+        {
+            path.Add(current.idx);
+        }
+        path.Reverse();
+        return path;
     }
 
     private static object SearchAStar(IGraph graph, int idx1, int idx2, System.Func<IGraph, int, int, float> heuristic)
@@ -65,12 +79,12 @@ public class NewBehaviourScript : MonoBehaviour
         while (openList.Count > 0)
         {
             var idx = openList.Dequeue();
+            var current = searchNodes[idx];
             if (idx == idx2)
             {
-                return new object(); // TODO Jonas: reconstruct path;
+                return ReconstructPath(current);
             }
 
-            var current = searchNodes[idx];
             current.closed = true;
 
             var edge = graph.GetEdges(idx);
