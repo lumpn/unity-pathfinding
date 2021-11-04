@@ -1,8 +1,13 @@
+//----------------------------------------
+// MIT License
+// Copyright(c) 2021 Jonas Boetel
+//----------------------------------------
 using Lumpn.Graph;
 using UnityEngine;
 
 public class Demo : MonoBehaviour
 {
+    [ContextMenu(nameof(Start))]
     void Start()
     {
         var n1 = new Node("Start");

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 
-public interface IGraph
+namespace Lumpn.Graph
 {
-    int nodeCount { get; }
+    public interface IGraph
+    {
+        int nodeCount { get; }
 
-    IEnumerable<Edge> GetEdges(int idx);
+        IEnumerable<Edge> GetEdges(int idx);
+    }
 }

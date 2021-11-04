@@ -1,3 +1,7 @@
+//----------------------------------------
+// MIT License
+// Copyright(c) 2021 Jonas Boetel
+//----------------------------------------
 using System.Collections.Generic;
 
 public static class DictionaryExtensions

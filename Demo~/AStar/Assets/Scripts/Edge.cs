@@ -1,11 +1,18 @@
-﻿public struct Edge
+﻿//----------------------------------------
+// MIT License
+// Copyright(c) 2021 Jonas Boetel
+//----------------------------------------
+namespace Lumpn.Graph
 {
-    public readonly int target;
-    public readonly float cost;
-
-    public Edge(int target, float cost)
+    public struct Edge
     {
-        this.target = target;
-        this.cost = cost;
+        public readonly int target;
+        public readonly float cost;
+
+        public Edge(int target, float cost)
+        {
+            this.target = target;
+            this.cost = cost;
+        }
     }
 }

@@ -1,9 +1,13 @@
-﻿public class Node
+﻿
+namespace Lumpn.Graph
 {
-    public readonly string name;
-
-    public Node(string name)
+    public class Node
     {
-        this.name = name;
+        public readonly string name;
+
+        public Node(string name)
+        {
+            this.name = name;
+        }
     }
 }
