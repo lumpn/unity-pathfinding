@@ -69,6 +69,8 @@ public class Demo : MonoBehaviour
             }
         }
 
+        graph.Process();
+
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 

@@ -69,8 +69,13 @@ namespace Lumpn.Graph
                 if (explored[nodeId]) continue;
                 explored[nodeId] = true;
 
-                foreach (var edge in graph.GetEdges(nodeId))
+                var firstEdgeId = graph.GetFirstEdgeId(nodeId);
+                var lastEdgeId = graph.GetLastEdgeId(nodeId);
+
+                for (int edgeId = firstEdgeId; edgeId <= lastEdgeId; edgeId++)
                 {
+                    var edge = graph.GetEdge(edgeId);
+
                     var targetId = edge.target;
                     if (!explored[targetId])
                     {
