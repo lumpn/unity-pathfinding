@@ -1,8 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Lumpn.Graph;
-using UnityEngine;
 
 namespace Lumpn.Graph
 {
@@ -48,35 +44,35 @@ namespace Lumpn.Graph
 
         public Path Search(IGraph graph, int startId, int destinationId)
         {
-            var nodes = Enumerable.Range(0, graph.nodeCount).Select(id => new Node(id)).ToArray();
+            var nodeCount = graph.nodeCount;
+            var explored = new bool[nodeCount];
+            var parents = new int[nodeCount];
 
-            var frontier = new Heap<HeapEntry>(comparer, graph.nodeCount);
-            frontier.Push(new HeapEntry(startId, 0f));
+            var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
 
-            while (frontier.Count > 0)
+            parents[startId] = -1;
+            queue.Push(new HeapEntry(startId, 0f));
+
+            while (queue.Count > 0)
             {
-                var entry = frontier.Pop();
-                var id = entry.nodeId;
-                if (id == destinationId)
+                var entry = queue.Pop();
+                var nodeId = entry.nodeId;
+                if (nodeId == destinationId)
                 {
-                    return ReconstructPath(nodes, id);
+                    return ReconstructPath(nodeId, entry.cost, parents);
                 }
 
-                var node = nodes[id];
-                if (node.explored) continue;
-                node.explored = true;
-                nodes[id] = node;
+                if (explored[nodeId]) continue;
+                explored[nodeId] = true;
 
-                foreach (var edge in graph.GetEdges(id))
+                foreach (var edge in graph.GetEdges(nodeId))
                 {
                     var targetId = edge.target;
-                    var targetNode = nodes[targetId];
-                    if (!targetNode.explored)
+                    if (!explored[targetId])
                     {
                         var cost = entry.cost + edge.cost;
-                        targetNode.parent = id;
-                        nodes[targetId] = targetNode;
-                        frontier.Push(new HeapEntry(targetId, cost));
+                        parents[targetId] = nodeId;
+                        queue.Push(new HeapEntry(targetId, cost));
                     }
                 }
             }
@@ -84,14 +80,16 @@ namespace Lumpn.Graph
             return null;
         }
 
-        private static Path ReconstructPath(Node[] nodes, int id)
+        private static Path ReconstructPath(int lastId, float cost, int[] parents)
         {
-            var path = new Path(node.cost);
-            for (var current = node.id; current >= 0; current = current.parent)
+            var nodes = new List<int>();
+            for (var id = lastId; id >= 0; id = parents[id])
             {
-                path.Add(current.idx);
+                nodes.Add(id);
             }
-            return path;
+            nodes.Reverse();
+
+            return new Path(cost, nodes);
         }
     }
 }

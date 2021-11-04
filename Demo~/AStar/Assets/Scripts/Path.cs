@@ -1,29 +1,29 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
-public class Path : IEnumerable<int>
+namespace Lumpn.Graph
 {
-    public int length;
-    public readonly float cost;
-
-    public Path(float cost)
+    public sealed class Path : IEnumerable<int>
     {
-        this.cost = cost;
-    }
+        private readonly List<int> nodes = new List<int>();
+        public readonly float cost;
 
-    public IEnumerator<int> GetEnumerator()
-    {
-        throw new System.NotImplementedException();
-    }
+        public int length => nodes.Count;
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        throw new System.NotImplementedException();
-    }
+        public Path(float cost, IEnumerable<int> nodes)
+        {
+            this.cost = cost;
+            this.nodes.AddRange(nodes);
+        }
 
-    internal void Add(int idx)
-    {
-        throw new NotImplementedException();
+        public IEnumerator<int> GetEnumerator()
+        {
+            return nodes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return nodes.GetEnumerator();
+        }
     }
 }
