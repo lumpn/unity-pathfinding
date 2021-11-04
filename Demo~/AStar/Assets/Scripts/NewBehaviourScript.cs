@@ -14,11 +14,13 @@ public class NewBehaviourScript : MonoBehaviour
         var idx2 = graph.AddNode(n2);
         graph.AddEdge(idx1, idx2, 5f);
 
-        var path = SearchDijkstra(graph, idx1, idx2);
+        var algorithm = new Dijkstra();
+        var path = algorithm.Search(graph, idx1, idx2);
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
 
-        foreach (var node in path)
+        foreach (var idx in path)
         {
+            var node = graph.GetNode(idx);
             Debug.LogFormat("Node {0}", node.position);
         }
     }

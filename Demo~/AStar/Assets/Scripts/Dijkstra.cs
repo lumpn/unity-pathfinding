@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Dijkstra : MonoBehaviour
 {
-
-    private static Path SearchDijkstra(IGraph graph, int idx1, int idx2)
+    internal class SearchNode
     {
-        Contract.Ensures(Contract.Result<Path>() != null);
+        internal float cost;
+        internal bool explored;
+        internal SearchNode parent;
+        internal int idx;
+    }
+
+    public Path Search(IGraph graph, int idx1, int idx2)
+    {
         var searchNodes = graph.GetNodes().Select(p => new SearchNode()).ToArray();
 
         var frontier = new PriorityQueue<int>();
@@ -39,6 +46,8 @@ public class Dijkstra : MonoBehaviour
                 }
             }
         }
+
+        return null;
     }
 
     private static Path ReconstructPath(SearchNode node)

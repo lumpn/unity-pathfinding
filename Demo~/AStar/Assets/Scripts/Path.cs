@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-internal class Path : IEnumerable<int>
+public class Path : IEnumerable<int>
 {
     public int length;
     public readonly float cost;
@@ -19,5 +20,10 @@ internal class Path : IEnumerable<int>
     IEnumerator IEnumerable.GetEnumerator()
     {
         throw new System.NotImplementedException();
+    }
+
+    internal void Add(int idx)
+    {
+        throw new NotImplementedException();
     }
 }

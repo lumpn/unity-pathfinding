@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-internal class Graph : IGraph
+public class Graph : IGraph
 {
     public Graph()
     {
@@ -18,12 +18,17 @@ internal class Graph : IGraph
         throw new NotImplementedException();
     }
 
-    public IEnumerable<object> GetNodes()
+    public IEnumerable<Node> GetNodes()
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<object> GetEdges(object idx)
+    internal Node GetNode(int idx)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Edge> GetEdges(int idx)
     {
         throw new NotImplementedException();
     }
