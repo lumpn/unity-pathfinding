@@ -4,7 +4,7 @@
   "displayName": "A* Search",
   "description": "Graph-based A* search.",
   "dependencies": {
-    "com.unity.ext.nunit": "1.0.0",
+    "com.unity.ext.nunit": "1.0.0"
   },
   "keywords": [
     "lumpn",

@@ -13,6 +13,14 @@
       "source": "local-tarball",
       "dependencies": {}
     },
+    "de.lumpn.unity-astar": {
+      "version": "file:../../../",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.ext.nunit": "1.0.0"
+      }
+    },
     "de.lumpn.unity-formatting": {
       "version": "file:W:/Github/unity-formatting",
       "depth": 0,
