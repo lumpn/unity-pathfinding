@@ -2,6 +2,7 @@
 // MIT License
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace Lumpn.Graph
     internal sealed class Heap<T>
     {
         private readonly IComparer<T> comparer;
-        private readonly T[] heap;
+        private T[] heap;
         private int count;
 
         public int Count
@@ -19,16 +20,10 @@ namespace Lumpn.Graph
             get { return count; }
         }
 
-        public int LastIndex
+        public int Capacity
         {
-            get { return Count - 1; }
+            get { return heap.Length; }
         }
-
-        //public int Capacity
-        //{
-        //    get { return heap.Capacity; }
-        //    set { heap.Capacity = value; }
-        //}
 
         public Heap(IComparer<T> comparer, int initialCapacity)
         {
@@ -37,29 +32,32 @@ namespace Lumpn.Graph
             this.count = 0;
         }
 
-        //public void Push(IEnumerable<T> items)
-        //{
-        //    int prevCount = Count;
-        //    heap.AddRange(items);
+        public void Push(IEnumerable<T> items)
+        {
+            int oldCount = count;
+            foreach (var item in items)
+            {
+                Add(item);
+            }
 
-        //    // heapify
-        //    for (int i = prevCount; i < Count; i++)
-        //    {
-        //        BubbleUp(i);
-        //    }
-        //}
+            // heapify
+            for (int i = oldCount; i < count; i++)
+            {
+                BubbleUp(i);
+            }
+        }
 
         public void Push(T item)
         {
-            heap[count++] = item;
-            BubbleUp(LastIndex);
+            Add(item);
+            BubbleUp(count - 1);
         }
 
         public T Pop()
         {
             T result = heap[0];
-            Swap(LastIndex, 0);
-            count--;
+            Swap(count - 1, 0);
+            RemoveLast();
             BubbleDown(0);
             return result;
         }
@@ -83,10 +81,10 @@ namespace Lumpn.Graph
         private void BubbleDown(int i)
         {
             var childA = FirstChild(i);
-            if (childA >= Count) return; // no children
+            if (childA >= count) return; // no children
 
             var childB = childA + 1;
-            var minChild = (childB >= Count || comparer.Compare(heap[childA], heap[childB]) < 0) ? childA : childB;
+            var minChild = (childB >= count || comparer.Compare(heap[childA], heap[childB]) < 0) ? childA : childB;
 
             if (comparer.Compare(heap[minChild], heap[i]) >= 0) return;
 
@@ -114,13 +112,7 @@ namespace Lumpn.Graph
         public void Clear()
         {
             count = 0;
-            //heap.Clear();
         }
-
-        //public IEnumerator<T> GetEnumerator()
-        //{
-        //    return heap.GetEnumerator();
-        //}
 
         public override string ToString()
         {
@@ -133,6 +125,22 @@ namespace Lumpn.Graph
             }
             sb.Append("_)");
             return sb.ToString();
+        }
+
+        private void Add(T item)
+        {
+            var capacity = heap.Length;
+            if (count >= capacity)
+            {
+                Array.Resize(ref heap, capacity * 2);
+            }
+
+            heap[count++] = item;
+        }
+
+        private void RemoveLast()
+        {
+            count--;
         }
     }
 }

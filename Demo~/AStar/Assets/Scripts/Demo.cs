@@ -64,14 +64,16 @@ public class Demo : MonoBehaviour
         {
             for (int y = 0; y < gridSize.y; y++)
             {
-                if (x > 0 && Random.value < edgeProbability)
+                //if (x > 0 && Random.value < edgeProbability)
+                if (x > 0)
                 {
                     graph.AddEdge(grid[x - 1, y].id, grid[x, y].id, 1f);
 
                     //var position = new Vector3(x - 1, y, 0);
                     //Object.Instantiate(horizontalEdgePrefab, position, Quaternion.identity, gridGo.transform);
                 }
-                if (y > 0 && Random.value < edgeProbability)
+                //if (y > 0 && Random.value < edgeProbability)
+                if (y > 0)
                 {
                     graph.AddEdge(grid[x, y - 1].id, grid[x, y].id, 1f);
 
@@ -93,9 +95,13 @@ public class Demo : MonoBehaviour
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        sampler2.Begin();
-        var path = algorithm.Search(graph, start.id, end.id);
-        sampler2.End();
+        Path path = null;
+        for (int i = 0; i < 10; i++)
+        {
+            sampler2.Begin();
+            path = algorithm.Search(graph, start.id, end.id);
+            sampler2.End();
+        }
 
         stopwatch.Stop();
 
