@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Lumpn.Graph;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class Demo : MonoBehaviour
 {
@@ -29,9 +30,20 @@ public class Demo : MonoBehaviour
         return nodes[id];
     }
 
-    [ContextMenu(nameof(Start))]
-    void Start()
+    IEnumerator Start()
     {
+        yield return new WaitForSeconds(1);
+        Run();
+        yield return new WaitForSeconds(1);
+        Debug.Break();
+    }
+
+    [ContextMenu(nameof(Run))]
+    public void Run()
+    {
+        var sampler1 = CustomSampler.Create("Graph Process");
+        var sampler2 = CustomSampler.Create("Graph Search");
+
         var grid = new Node[gridSize.x, gridSize.y];
         for (int x = 0; x < gridSize.x; x++)
         {
@@ -69,16 +81,21 @@ public class Demo : MonoBehaviour
             }
         }
 
+        sampler1.Begin();
         graph.Process();
+        sampler1.End();
 
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
+        var algorithm = new Dijkstra();
+
         var stopwatch = new System.Diagnostics.Stopwatch();
         stopwatch.Start();
 
-        var algorithm = new Dijkstra();
+        sampler2.Begin();
         var path = algorithm.Search(graph, start.id, end.id);
+        sampler2.End();
 
         stopwatch.Stop();
 

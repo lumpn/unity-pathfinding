@@ -3,6 +3,7 @@
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
+using UnityEngine.Profiling;
 
 namespace Lumpn.Graph
 {
@@ -48,22 +49,36 @@ namespace Lumpn.Graph
 
         public Path Search(IGraph graph, int startId, int destinationId)
         {
+            var sampler1 = CustomSampler.Create("Allocate");
+            var sampler2 = CustomSampler.Create("Push");
+            var sampler3 = CustomSampler.Create("Pop");
+            var sampler4 = CustomSampler.Create("Reconstruct");
+
+            sampler1.Begin();
             var nodeCount = graph.nodeCount;
             var explored = new bool[nodeCount];
             var parents = new int[nodeCount];
+            sampler1.End();
 
             var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
 
             parents[startId] = -1;
+            sampler2.Begin();
             queue.Push(new HeapEntry(startId, 0f));
+            sampler2.End();
 
             while (queue.Count > 0)
             {
+                sampler3.Begin();
                 var entry = queue.Pop();
+                sampler3.End();
                 var nodeId = entry.nodeId;
                 if (nodeId == destinationId)
                 {
-                    return ReconstructPath(nodeId, entry.cost, parents);
+                    sampler4.Begin();
+                    var path = ReconstructPath(nodeId, entry.cost, parents);
+                    sampler4.End();
+                    return path;
                 }
 
                 if (explored[nodeId]) continue;
@@ -81,7 +96,9 @@ namespace Lumpn.Graph
                     {
                         var cost = entry.cost + edge.cost;
                         parents[targetId] = nodeId;
+                        sampler2.Begin();
                         queue.Push(new HeapEntry(targetId, cost));
+                        sampler2.End();
                     }
                 }
             }
