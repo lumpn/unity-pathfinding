@@ -2,50 +2,104 @@
 // MIT License
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
-//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
+using System.Collections.Generic;
 
-//public class AStar : MonoBehaviour
-//{
+namespace Lumpn.Graph
+{
+    public sealed class AStar
+    {
+        private struct Node
+        {
+            public readonly int id;
+            public int parent;
+            public bool explored;
 
-//    private static object SearchAStar(IGraph graph, int idx1, int idx2, System.Func<IGraph, int, int, float> heuristic)
-//    {
-//        var searchNodes = graph.GetNodes().Select(p => new SearchNode()).ToArray();
+            public Node(int id)
+            {
+                this.id = id;
+                this.parent = -1;
+                this.explored = false;
+            }
+        }
 
-//        var openList = new PriorityQueue<int>();
-//        openList.Enqueue(idx1);
+        private struct HeapEntry
+        {
+            public readonly int nodeId;
+            public readonly float f_score;
+            public readonly float g_score;
 
-//        while (openList.Count > 0)
-//        {
-//            var idx = openList.Dequeue();
-//            var current = searchNodes[idx];
-//            if (idx == idx2)
-//            {
-//                return ReconstructPath(current);
-//            }
+            public HeapEntry(int nodeId, float g_score, float heuristic)
+            {
+                this.nodeId = nodeId;
+                this.g_score = g_score;
+                this.f_score = g_score + heuristic;
+            }
+        }
 
-//            current.closed = true;
+        private sealed class HeapEntryComparer : IComparer<HeapEntry>
+        {
+            private static readonly IComparer<float> costComparer = Comparer<float>.Default;
 
-//            var edge = graph.GetEdges(idx);
-//            foreach (var edge in edges)
-//            {
-//                var tentativeScore = current.g_score + edge.cost;
-//                var dest = edge.index;
-//                var destNode = searchNodes[dest];
-//                if (tentativeScore < destNode.g_score)
-//                {
-//                    destNode.prev = current;
-//                    destNode.g_score = tentativeScore;
-//                    destNode.f_score = destNode.g_score + heuristic(graph, dest, idx2);
-//                    if (explored.Add(dest))
-//                    {
-//                        openList.Enqueue(destNode, destNode.f_score);
-//                    }
-//                }
-//            }
-//        }
+            public int Compare(HeapEntry x, HeapEntry y)
+            {
+                return costComparer.Compare(x.f_score, y.f_score);
+            }
+        }
 
-//        return null;
-//    }
-//}
+        private static readonly HeapEntryComparer comparer = new HeapEntryComparer();
+
+        public delegate float CalculateHeuristic(IGraph graph, int startId, int destinationId);
+
+        public Path Search(IGraph graph, int startId, int destinationId, CalculateHeuristic calculateHeuristic)
+        {
+            var nodeCount = graph.nodeCount;
+            var explored = new bool[nodeCount];
+            var parents = new int[nodeCount];
+
+            var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
+
+            parents[startId] = -1;
+            queue.Push(new HeapEntry(startId, 0f, calculateHeuristic(graph, startId, destinationId)));
+
+            while (queue.Count > 0)
+            {
+                var entry = queue.Pop();
+                var nodeId = entry.nodeId;
+                if (nodeId == destinationId)
+                {
+                    var path = ReconstructPath(nodeId, entry.g_score, parents);
+                    return path;
+                }
+
+                if (explored[nodeId]) continue;
+                explored[nodeId] = true;
+
+                foreach (var edge in graph.GetEdges(nodeId))
+                {
+                    var targetId = edge.target;
+                    if (!explored[targetId])
+                    {
+                        var cost = entry.g_score + edge.cost;
+
+                        parents[targetId] = nodeId;
+                        queue.Push(new HeapEntry(targetId, cost, calculateHeuristic(graph, targetId, destinationId)));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static Path ReconstructPath(int lastId, float cost, int[] parents)
+        {
+            var nodes = new List<int>();
+            for (var id = lastId; id >= 0; id = parents[id])
+            {
+                nodes.Add(id);
+            }
+            nodes.Reverse();
+
+            return new Path(cost, nodes);
+        }
+    }
+}
