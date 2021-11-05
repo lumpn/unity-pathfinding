@@ -57,23 +57,20 @@ namespace Lumpn.Graph
             sampler1.Begin();
             var nodeCount = graph.nodeCount;
             var explored = new bool[nodeCount];
-            var discovered = new bool[nodeCount];
             var parents = new int[nodeCount];
             sampler1.End();
 
-            var undiscoveredQueue = new Heap<HeapEntry>(comparer, graph.nodeCount);
-            var discoveredQueue = new Heap<HeapEntry>(comparer, graph.nodeCount);
+            var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
 
             parents[startId] = -1;
             sampler2.Begin();
-            undiscoveredQueue.Push(new HeapEntry(startId, 0f));
-            discovered[startId] = true;
+            queue.Push(new HeapEntry(startId, 0f));
             sampler2.End();
 
-            while (undiscoveredQueue.Count > 0 || discoveredQueue.Count > 0)
+            while (queue.Count > 0)
             {
                 sampler3.Begin();
-                var entry = Pop(undiscoveredQueue, discoveredQueue);
+                var entry = queue.Pop();
                 sampler3.End();
                 var nodeId = entry.nodeId;
                 if (nodeId == destinationId)
@@ -87,47 +84,22 @@ namespace Lumpn.Graph
                 if (explored[nodeId]) continue;
                 explored[nodeId] = true;
 
-                var firstEdgeId = graph.GetFirstEdgeId(nodeId);
-                var lastEdgeId = graph.GetLastEdgeId(nodeId);
-
-                for (int edgeId = firstEdgeId; edgeId <= lastEdgeId; edgeId++)
+                foreach (var edge in graph.GetEdges(nodeId))
                 {
-                    var edge = graph.GetEdge(edgeId);
-
                     var targetId = edge.target;
                     if (!explored[targetId])
                     {
                         var cost = entry.cost + edge.cost;
                         parents[targetId] = nodeId;
 
-                        var queue = discovered[targetId] ? discoveredQueue : undiscoveredQueue;
                         sampler2.Begin();
                         queue.Push(new HeapEntry(targetId, cost));
-                        discovered[targetId] = true;
                         sampler2.End();
                     }
                 }
             }
 
             return null;
-        }
-
-        private static HeapEntry Pop(Heap<HeapEntry> heap1, Heap<HeapEntry> heap2)
-        {
-            if (heap1.Count <= 0)
-            {
-                return heap2.Pop();
-            }
-            if (heap2.Count <= 0)
-            {
-                return heap1.Pop();
-            }
-
-            var entry1 = heap1.Peek();
-            var entry2 = heap2.Peek();
-            var entry = (entry1.cost <= entry2.cost) ? heap1.Pop() : heap2.Pop();
-
-            return entry;
         }
 
         private static Path ReconstructPath(int lastId, float cost, int[] parents)
