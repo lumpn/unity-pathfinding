@@ -25,11 +25,13 @@ namespace Lumpn.Graph
         private struct HeapEntry
         {
             public readonly int nodeId;
+            public readonly int parentId;
             public readonly float cost;
 
-            public HeapEntry(int nodeId, float cost)
+            public HeapEntry(int nodeId, int parentId, float cost)
             {
                 this.nodeId = nodeId;
+                this.parentId = parentId;
                 this.cost = cost;
             }
         }
@@ -54,21 +56,22 @@ namespace Lumpn.Graph
 
             var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
 
-            parents[startId] = -1;
-            queue.Push(new HeapEntry(startId, 0f));
+            queue.Push(new HeapEntry(startId, -1, 0f));
 
             while (queue.Count > 0)
             {
                 var entry = queue.Pop();
                 var nodeId = entry.nodeId;
+
+                if (explored[nodeId]) continue;
+                explored[nodeId] = true;
+                parents[nodeId] = entry.parentId;
+
                 if (nodeId == destinationId)
                 {
                     var path = ReconstructPath(nodeId, entry.cost, parents);
                     return path;
                 }
-
-                if (explored[nodeId]) continue;
-                explored[nodeId] = true;
 
                 foreach (var edge in graph.GetEdges(nodeId))
                 {
@@ -76,9 +79,7 @@ namespace Lumpn.Graph
                     if (!explored[targetId])
                     {
                         var cost = entry.cost + edge.cost;
-
-                        parents[targetId] = nodeId;
-                        queue.Push(new HeapEntry(targetId, cost));
+                        queue.Push(new HeapEntry(targetId, nodeId, cost));
                     }
                 }
             }
