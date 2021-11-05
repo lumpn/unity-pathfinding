@@ -248,7 +248,7 @@ MonoBehaviour:
   gridSize: {x: 1000, y: 1000}
   horizontalEdgePrefab: {fileID: 6224720573353790475, guid: 1cfa7f21f333cb64b8b1f3b667dacf93, type: 3}
   verticalEdgePrefab: {fileID: 8240793746762944573, guid: 0b65d522f99b4fc4b9eec740dfbd22f6, type: 3}
-  edgeProbability: 0.7
+  edgeProbability: 0.75
 --- !u!4 &862180884
 Transform:
   m_ObjectHideFlags: 0
