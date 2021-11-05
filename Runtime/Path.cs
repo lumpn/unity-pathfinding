@@ -4,11 +4,14 @@
 //----------------------------------------
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Lumpn.Graph
 {
     public sealed class Path : IEnumerable<int>
     {
+        public static readonly Path invalid = new Path(-1f, Enumerable.Empty<int>());
+
         private readonly List<int> nodes = new List<int>();
         public readonly float cost;
 

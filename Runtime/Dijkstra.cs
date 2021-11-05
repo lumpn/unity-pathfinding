@@ -84,7 +84,7 @@ namespace Lumpn.Graph
                 }
             }
 
-            return null;
+            return Path.invalid;
         }
 
         private static Path ReconstructPath(int lastId, float cost, int[] parents)
