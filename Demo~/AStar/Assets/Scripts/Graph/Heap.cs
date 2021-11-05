@@ -3,6 +3,7 @@
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Lumpn.Graph
@@ -78,14 +79,28 @@ namespace Lumpn.Graph
             BubbleUp(parent);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void BubbleDown(int i)
         {
             var childA = FirstChild(i);
-            var childB = childA + 1;
             if (childA >= Count) return; // no children
 
-            var minChild = (childB >= Count || comparer.Compare(heap[childA], heap[childB]) < 0) ? childA : childB;
-            if (comparer.Compare(heap[minChild], heap[i]) >= 0) return;
+            var value = heap[i];
+            var minChild = childA;
+            var minValue = heap[childA];
+
+            var childB = childA + 1;
+            if (childB < Count)
+            {
+                var valueB = heap[childB];
+                if (comparer.Compare(minValue, valueB) > 0)
+                {
+                    minChild = childB;
+                    minValue = valueB;
+                }
+            }
+
+            if (comparer.Compare(minValue, value) >= 0) return;
 
             Swap(i, minChild);
             BubbleDown(minChild);
