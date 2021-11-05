@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Lumpn.Graph;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class Demo : MonoBehaviour
 {
@@ -71,19 +70,14 @@ public class Demo : MonoBehaviour
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
+        var watch = new System.Diagnostics.Stopwatch();
+        watch.Start();
+
         var algorithm = new Dijkstra();
-
-        var sampler = CustomSampler.Create("Graph Search");
-        var stopwatch = new System.Diagnostics.Stopwatch();
-        stopwatch.Start();
-
-        sampler.Begin();
         var path = algorithm.Search(graph, start, end);
-        sampler.End();
 
-        stopwatch.Stop();
-
-        Debug.LogFormat("Search took {0} ms", stopwatch.ElapsedMilliseconds);
+        watch.Stop();
+        Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);
 
         if (path == null)
         {
