@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Lumpn.Graph
 {
-    public sealed class AStar
+    public sealed class AStar : ISearch
     {
         private struct Node
         {
@@ -50,7 +50,14 @@ namespace Lumpn.Graph
 
         public delegate float CalculateHeuristic(IGraph graph, int startId, int destinationId);
 
-        public Path Search(IGraph graph, int startId, int destinationId, CalculateHeuristic calculateHeuristic)
+        private readonly CalculateHeuristic calculateHeuristic;
+
+        public AStar(CalculateHeuristic calculateHeuristic)
+        {
+            this.calculateHeuristic = calculateHeuristic;
+        }
+
+        public Path Search(IGraph graph, int startId, int destinationId)
         {
             var nodeCount = graph.nodeCount;
             var explored = new bool[nodeCount];

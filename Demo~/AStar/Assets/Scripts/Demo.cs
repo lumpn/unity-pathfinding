@@ -70,14 +70,16 @@ public class Demo : MonoBehaviour
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
-        var watch = new System.Diagnostics.Stopwatch();
-        watch.Start();
+        AStar.CalculateHeuristic heuristic = (g, a, b) =>
+        {
+            var n1 = nodes[a];
+            var n2 = nodes[b];
+            return Vector2.Distance(n1.position, n2.position);
+        };
 
-        var algorithm = new Dijkstra();
-        var path = algorithm.Search(graph, start, end);
-
-        watch.Stop();
-        Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);
+        Path path;
+        path = Search(new Dijkstra(), graph, start, end);
+        path = Search(new AStar(heuristic), graph, start, end);
 
         if (path == null)
         {
@@ -96,5 +98,18 @@ public class Demo : MonoBehaviour
             sphere.transform.SetParent(pathGo.transform, false);
             sphere.transform.localPosition = node.position;
         }
+    }
+
+    private static Path Search(ISearch algorithm, IGraph graph, int start, int end)
+    {
+        var watch = new System.Diagnostics.Stopwatch();
+        watch.Start();
+
+        var path = algorithm.Search(graph, start, end);
+
+        watch.Stop();
+        Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);
+
+        return path;
     }
 }

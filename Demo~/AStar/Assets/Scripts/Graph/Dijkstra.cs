@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Lumpn.Graph
 {
-    public sealed class Dijkstra
+    public sealed class Dijkstra : ISearch
     {
         private struct Node
         {
