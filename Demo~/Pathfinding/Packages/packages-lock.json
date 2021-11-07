@@ -8,21 +8,21 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.monodevelop": {
-      "version": "file:W:/Github/com.unity.ide.monodevelop-2.2.1.tgz",
+      "version": "file:../../../../com.unity.ide.monodevelop-2.2.1.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {}
     },
-    "de.lumpn.unity-astar": {
-      "version": "file:../../../",
+    "de.lumpn.unity-formatting": {
+      "version": "file:../../../../unity-formatting",
       "depth": 0,
       "source": "local",
       "dependencies": {
         "com.unity.ext.nunit": "1.0.0"
       }
     },
-    "de.lumpn.unity-formatting": {
-      "version": "file:W:/Github/unity-formatting",
+    "de.lumpn.unity-pathfinding": {
+      "version": "file:../../../",
       "depth": 0,
       "source": "local",
       "dependencies": {
