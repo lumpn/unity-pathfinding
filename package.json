@@ -1,13 +1,16 @@
 {
-  "name": "de.lumpn.unity-astar",
-  "version": "0.1.0",
-  "displayName": "A* Search",
-  "description": "Graph-based A* search.",
+  "name": "de.lumpn.unity-pathfinding",
+  "version": "0.2.0",
+  "displayName": "Pathfinding",
+  "description": "Graph-based pathfinding.",
   "dependencies": {
     "com.unity.ext.nunit": "1.0.0"
   },
   "keywords": [
     "lumpn",
+    "graph",
+    "path",
+    "pathfinding",
     "astar",
     "a-star",
     "search"

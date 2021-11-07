@@ -1,5 +1,5 @@
 {
-    "name": "Lumpn.AStar",
+    "name": "Lumpn.Pathfinding",
     "rootNamespace": "",
     "references": [],
     "includePlatforms": [],
