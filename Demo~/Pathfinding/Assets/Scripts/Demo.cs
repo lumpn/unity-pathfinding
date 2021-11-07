@@ -93,6 +93,18 @@ public class Demo : MonoBehaviour
         return Vector3.Distance(u.position, v.position);
     }
 
+    private static float NoHeuristic(IGraph graph, INode a, INode b)
+    {
+        return 0f;
+    }
+
+    private static float DistanceHeuristic(IGraph graph, INode a, INode b)
+    {
+        var u = (Node)a;
+        var v = (Node)b;
+        return Vector3.Distance(u.position, v.position);
+    }
+
     private static Path Run(AStarSearch search, IGraph graph, int startId, int destinationId, Heuristic heuristic)
     {
         var watch = new System.Diagnostics.Stopwatch();

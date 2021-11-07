@@ -7,8 +7,6 @@ using System;
 
 namespace Lumpn.Pathfinding
 {
-    public delegate float Heuristic(IGraph graph, int startId, int destinationId);
-
     public sealed class AStarSearch
     {
         private static readonly StepComparer comparer = new StepComparer();
@@ -33,35 +31,56 @@ namespace Lumpn.Pathfinding
             Array.Resize(ref parents, nodeCount);
             Array.Clear(parents, 0, nodeCount);
 
-            queue.Push(new Step(startId, -1, 0f, heuristic(graph, startId, destinationId)));
+            var destination = graph.GetNode(destinationId);
+            queue.Push(CreateStep(graph, startId, -1, 0f, heuristic, destination));
 
-            while (queue.Count > 0)
+            int numPop = 0;
+            var watch = new System.Diagnostics.Stopwatch();
+            try
             {
-                var step = queue.Pop();
-                var nodeId = step.nodeId;
 
-                if (parents[nodeId] > 0) continue;
-                parents[nodeId] = step.parentId + 2;
-
-                if (nodeId == destinationId)
+                while (queue.Count > 0)
                 {
-                    queue.Clear();
-                    return ReconstructPath(graph, nodeId, step.cost, parents);
-                }
+                    numPop++;
+                    watch.Start();
+                    var step = queue.Pop();
+                    watch.Stop();
+                    var nodeId = step.nodeId;
 
-                var nodeCost = step.cost;
-                foreach (var edge in graph.GetEdges(nodeId))
-                {
-                    var targetId = edge.targetNodeId;
-                    if (parents[targetId] <= 0)
+                    if (parents[nodeId] > 0) continue;
+                    parents[nodeId] = step.parentId + 2;
+
+                    if (nodeId == destinationId)
                     {
+                        queue.Clear();
+                        return ReconstructPath(graph, nodeId, step.cost, parents);
+                    }
+
+                    var nodeCost = step.cost;
+                    foreach (var edge in graph.GetEdges(nodeId))
+                    {
+                        var targetId = edge.targetNodeId;
+                        if (parents[targetId] > 0) continue;
+
                         var cost = nodeCost + edge.cost;
-                        queue.Push(new Step(targetId, nodeId, cost, heuristic(graph, targetId, destinationId)));
+                        queue.Push(CreateStep(graph, targetId, nodeId, cost, heuristic, destination));
                     }
                 }
-            }
 
-            return Path.invalid;
+                return Path.invalid;
+            }
+            finally
+            {
+                UnityEngine.Debug.LogFormat("Pop {0} took {1} ms", numPop, watch.ElapsedMilliseconds);
+            }
+        }
+
+        private static Step CreateStep(IGraph graph, int nodeId, int parentId, float cost, Heuristic heuristic, INode destination)
+        {
+            var node = graph.GetNode(nodeId);
+            var heuristicValue = heuristic(graph, node, destination);
+            var step = new Step(nodeId, parentId, cost, heuristicValue);
+            return step;
         }
 
         private static Path ReconstructPath(IGraph graph, int lastNodeId, float cost, int[] parents)
