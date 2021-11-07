@@ -19,10 +19,10 @@ namespace Lumpn.Pathfinding
             this.nodeCount = nodeCount;
         }
 
-        public void AddEdge(int sourceId, int targetId, float cost)
+        public void AddEdge(int sourceNodeId, int targetNodeId, float cost)
         {
-            var nodeEdges = edges.GetOrAddNew(sourceId);
-            nodeEdges.Add(new Edge(targetId, cost));
+            var nodeEdges = edges.GetOrAddNew(sourceNodeId);
+            nodeEdges.Add(new Edge(targetNodeId, cost));
         }
 
         public IEnumerable<Edge> GetEdges(int nodeId)

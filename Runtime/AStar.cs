@@ -83,7 +83,7 @@ namespace Lumpn.Pathfinding
 
                 foreach (var edge in graph.GetEdges(nodeId))
                 {
-                    var targetId = edge.target;
+                    var targetId = edge.targetNodeId;
                     if (!explored[targetId])
                     {
                         var cost = entry.g_score + edge.cost;

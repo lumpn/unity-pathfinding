@@ -6,12 +6,12 @@ namespace Lumpn.Pathfinding
 {
     public struct Edge
     {
-        public readonly int target;
+        public readonly int targetNodeId;
         public readonly float cost;
 
-        public Edge(int target, float cost)
+        public Edge(int targetNodeId, float cost)
         {
-            this.target = target;
+            this.targetNodeId = targetNodeId;
             this.cost = cost;
         }
     }

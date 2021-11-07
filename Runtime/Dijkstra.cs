@@ -11,42 +11,28 @@ namespace Lumpn.Pathfinding
         private struct Node
         {
             public readonly int id;
-            public int parent;
-            public bool explored;
-
-            public Node(int id)
-            {
-                this.id = id;
-                this.parent = -1;
-                this.explored = false;
-            }
-        }
-
-        private struct HeapEntry
-        {
-            public readonly int nodeId;
             public readonly int parentId;
             public readonly float cost;
 
-            public HeapEntry(int nodeId, int parentId, float cost)
+            public Node(int nodeId, int parentId, float cost)
             {
-                this.nodeId = nodeId;
+                this.id = nodeId;
                 this.parentId = parentId;
                 this.cost = cost;
             }
         }
 
-        private sealed class HeapEntryComparer : IComparer<HeapEntry>
+        private sealed class NodeComparer : IComparer<Node>
         {
             private static readonly IComparer<float> costComparer = Comparer<float>.Default;
 
-            public int Compare(HeapEntry x, HeapEntry y)
+            public int Compare(Node x, Node y)
             {
                 return costComparer.Compare(x.cost, y.cost);
             }
         }
 
-        private static readonly HeapEntryComparer comparer = new HeapEntryComparer();
+        private static readonly NodeComparer comparer = new NodeComparer();
 
         public Path Search(IGraph graph, int startId, int destinationId)
         {
@@ -54,14 +40,14 @@ namespace Lumpn.Pathfinding
             var explored = new bool[nodeCount];
             var parents = new int[nodeCount];
 
-            var queue = new Heap<HeapEntry>(comparer, graph.nodeCount);
+            var queue = new Heap<Node>(comparer, graph.nodeCount);
 
-            queue.Push(new HeapEntry(startId, -1, 0f));
+            queue.Push(new Node(startId, -1, 0f));
 
             while (queue.Count > 0)
             {
                 var entry = queue.Pop();
-                var nodeId = entry.nodeId;
+                var nodeId = entry.id;
 
                 if (explored[nodeId]) continue;
                 explored[nodeId] = true;
@@ -75,11 +61,11 @@ namespace Lumpn.Pathfinding
 
                 foreach (var edge in graph.GetEdges(nodeId))
                 {
-                    var targetId = edge.target;
+                    var targetId = edge.targetNodeId;
                     if (!explored[targetId])
                     {
                         var cost = entry.cost + edge.cost;
-                        queue.Push(new HeapEntry(targetId, nodeId, cost));
+                        queue.Push(new Node(targetId, nodeId, cost));
                     }
                 }
             }
