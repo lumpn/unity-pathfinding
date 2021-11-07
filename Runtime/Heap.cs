@@ -23,6 +23,7 @@ namespace Lumpn.Pathfinding
         public int Capacity
         {
             get { return heap.Length; }
+            set { Array.Resize(ref heap, value); }
         }
 
         public Heap(IComparer<T> comparer, int initialCapacity)

@@ -4,7 +4,7 @@
 //----------------------------------------
 using System.Collections.Generic;
 
-namespace Lumpn.Pathfinding.Dijkstra
+namespace Lumpn.Pathfinding.AStar
 {
     internal sealed class NodeComparer : IComparer<Node>
     {
@@ -12,7 +12,7 @@ namespace Lumpn.Pathfinding.Dijkstra
 
         public int Compare(Node a, Node b)
         {
-            return costComparer.Compare(a.cost, b.cost);
+            return costComparer.Compare(a.estimate, b.estimate);
         }
     }
 }

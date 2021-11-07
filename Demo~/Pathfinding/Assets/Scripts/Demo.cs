@@ -70,7 +70,7 @@ public class Demo : MonoBehaviour
         var start = grid[0, 0];
         var end = grid[gridSize.x - 1, gridSize.y - 1];
 
-        AStar.CalculateHeuristic heuristic = (g, a, b) =>
+        AStarSearch.Heuristic heuristic = (g, a, b) =>
         {
             var n1 = nodes[a];
             var n2 = nodes[b];
@@ -79,7 +79,7 @@ public class Demo : MonoBehaviour
 
         Path path;
         path = Search(new DijkstraSearch(), graph, start, end);
-        path = Search(new AStar(heuristic), graph, start, end);
+        path = Search(new AStarSearch(heuristic), graph, start, end);
 
         if (path == null)
         {
