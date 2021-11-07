@@ -74,7 +74,8 @@ namespace Lumpn.Pathfinding.Demo
             var search = new AStarSearch(graph.nodeCount);
             var path1 = Run(search, graph, startId, destinationId, NoHeuristic);
             var path2 = Run(search, graph, startId, destinationId, DistanceHeuristic);
-            var path = path2;
+            var path3 = Run(search, graph, startId, destinationId, GreedyHeuristic);
+            var path = path3;
 
             // print path
             trace.Clear();
@@ -92,6 +93,11 @@ namespace Lumpn.Pathfinding.Demo
             var u = (Node)a;
             var v = (Node)b;
             return Vector3.Distance(u.position, v.position);
+        }
+
+        private static float GreedyHeuristic(IGraph graph, INode a, INode b)
+        {
+            return 2 * DistanceHeuristic(graph, a, b);
         }
 
         private static Path Run(AStarSearch search, IGraph graph, int startId, int destinationId, Heuristic heuristic)

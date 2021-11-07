@@ -13,11 +13,6 @@ namespace Lumpn.Pathfinding.Demo
     {
         private const int length = 32 * 1024 * 1024;
 
-        [SetUp]
-        public void SetUp()
-        {
-        }
-
         [Test]
         public void TestClear()
         {
