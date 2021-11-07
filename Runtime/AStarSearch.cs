@@ -7,13 +7,19 @@ using System;
 
 namespace Lumpn.Pathfinding
 {
+    public delegate float Heuristic(IGraph graph, int startId, int destinationId);
+
     public sealed class AStarSearch
     {
         private static readonly StepComparer comparer = new StepComparer();
 
-        public delegate float Heuristic(IGraph graph, int startId, int destinationId);
-
         private readonly Heap<Step> queue;
+
+        /// <summary>
+        /// Index of the previous node on the shortest path to each node.
+        /// We reserve two values, 0 for unexplored, 1 for no parent.
+        /// All node ids are offset by 2 to account for the reserved values.
+        /// </summary>
         private int[] parents;
 
         public AStarSearch(int initialCapacity)
@@ -37,14 +43,13 @@ namespace Lumpn.Pathfinding
                 if (parents[nodeId] > 0) continue;
                 parents[nodeId] = step.parentId + 2;
 
-                var nodeCost = step.cost;
-
                 if (nodeId == destinationId)
                 {
                     queue.Clear();
-                    return ReconstructPath(graph, nodeId, nodeCost, parents);
+                    return ReconstructPath(graph, nodeId, step.cost, parents);
                 }
 
+                var nodeCost = step.cost;
                 foreach (var edge in graph.GetEdges(nodeId))
                 {
                     var targetId = edge.targetNodeId;

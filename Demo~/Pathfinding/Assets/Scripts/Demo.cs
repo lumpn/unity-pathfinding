@@ -25,6 +25,11 @@ public class Demo : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        Run();
+    }
+
     [ContextMenu(nameof(Run))]
     public void Run()
     {
@@ -63,8 +68,9 @@ public class Demo : MonoBehaviour
         var startId = grid[0, 0];
         var destinationId = grid[gridSize.x - 1, gridSize.y - 1];
 
-        Path path;
-        path = Search(new AStarSearch(graph.nodeCount), graph, startId, destinationId);
+        var search = new AStarSearch(graph.nodeCount);
+        Run(search, graph, startId, destinationId, NoHeuristic);
+        var path = Run(search, graph, startId, destinationId, DistanceHeuristic);
 
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
 
@@ -75,19 +81,24 @@ public class Demo : MonoBehaviour
         }
     }
 
-    private static float Heuristic(IGraph graph, int a, int b)
+    private static float NoHeuristic(IGraph graph, int a, int b)
+    {
+        return 0f;
+    }
+
+    private static float DistanceHeuristic(IGraph graph, int a, int b)
     {
         var u = (Node)graph.GetNode(a);
         var v = (Node)graph.GetNode(b);
         return Vector3.Distance(u.position, v.position);
     }
 
-    private static Path Search(AStarSearch algorithm, IGraph graph, int startId, int destinationId)
+    private static Path Run(AStarSearch search, IGraph graph, int startId, int destinationId, Heuristic heuristic)
     {
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
 
-        var path = algorithm.FindPath(graph, startId, destinationId, Heuristic);
+        var path = search.FindPath(graph, startId, destinationId, heuristic);
 
         watch.Stop();
         Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);

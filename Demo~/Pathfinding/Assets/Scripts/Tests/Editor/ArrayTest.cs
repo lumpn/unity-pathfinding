@@ -1,3 +1,7 @@
+//----------------------------------------
+// MIT License
+// Copyright(c) 2021 Jonas Boetel
+//----------------------------------------
 using System;
 using System.Diagnostics;
 using NUnit.Framework;
@@ -41,7 +45,7 @@ namespace Lumpn.Pathfinding.Demo
 
             watch.Stop();
 
-            UnityEngine.Debug.LogFormat("Clear took {0} ms", watch.ElapsedMilliseconds);
+            UnityEngine.Debug.LogFormat("Fill took {0} ms", watch.ElapsedMilliseconds);
         }
 
         private static void Fill<T>(T[] array, T value, int startIndex, int count)
