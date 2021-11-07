@@ -1,2 +1,2 @@
 # unity-pathfinding
-Graph-based pathfinding algorithms
+Graph-based A* pathfinding
