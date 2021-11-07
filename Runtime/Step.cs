@@ -4,16 +4,16 @@
 //----------------------------------------
 namespace Lumpn.Pathfinding
 {
-    internal struct Node
+    internal struct Step
     {
-        public readonly int id;
+        public readonly int nodeId;
         public readonly int parentId;
         public readonly float cost;
         public readonly float estimate;
 
-        public Node(int nodeId, int parentId, float cost, float heuristic)
+        public Step(int nodeId, int parentId, float cost, float heuristic)
         {
-            this.id = nodeId;
+            this.nodeId = nodeId;
             this.parentId = parentId;
             this.cost = cost;
             this.estimate = cost + heuristic;

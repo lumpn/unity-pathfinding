@@ -27,15 +27,15 @@ namespace Lumpn.Pathfinding
             return nodes[nodeId];
         }
 
-        public IEnumerable<Edge> GetEdges(int nodeId)
-        {
-            return edges.GetOrDefault(nodeId, emptyList);
-        }
-
         public void AddEdge(int sourceNodeId, int targetNodeId, float cost)
         {
             var nodeEdges = edges.GetOrAddNew(sourceNodeId);
             nodeEdges.Add(new Edge(targetNodeId, cost));
+        }
+
+        public IEnumerable<Edge> GetEdges(int nodeId)
+        {
+            return edges.GetOrDefault(nodeId, emptyList);
         }
     }
 }

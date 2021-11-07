@@ -8,31 +8,26 @@ namespace Lumpn.Pathfinding
 {
     public sealed class AStarSearch
     {
-        private static readonly NodeComparer comparer = new NodeComparer();
+        private static readonly StepComparer comparer = new StepComparer();
 
         public delegate float Heuristic(IGraph graph, int startId, int destinationId);
-
-        private bool[] explored;
-        private int[] parents;
 
         public Path Search(IGraph graph, int startId, int destinationId, Heuristic heuristic)
         {
             var nodeCount = graph.nodeCount;
-            var explored = new bool[nodeCount];
             var parents = new int[nodeCount];
 
-            var queue = new Heap<Node>(comparer, graph.nodeCount);
+            var queue = new Heap<Step>(comparer, graph.nodeCount);
 
-            queue.Push(new Node(startId, -1, 0f, heuristic(graph, startId, destinationId)));
+            queue.Push(new Step(startId, -1, 0f, heuristic(graph, startId, destinationId)));
 
             while (queue.Count > 0)
             {
                 var entry = queue.Pop();
-                var nodeId = entry.id;
+                var nodeId = entry.nodeId;
 
-                if (explored[nodeId]) continue;
-                explored[nodeId] = true;
-                parents[nodeId] = entry.parentId;
+                if (parents[nodeId] > 0) continue;
+                parents[nodeId] = entry.parentId + 1;
 
                 if (nodeId == destinationId)
                 {
@@ -43,10 +38,10 @@ namespace Lumpn.Pathfinding
                 foreach (var edge in graph.GetEdges(nodeId))
                 {
                     var targetId = edge.targetNodeId;
-                    if (!explored[targetId])
+                    if (parents[targetId] <= 0)
                     {
                         var cost = entry.cost + edge.cost;
-                        queue.Push(new Node(targetId, nodeId, cost, heuristic(graph, targetId, destinationId)));
+                        queue.Push(new Step(targetId, nodeId, cost, heuristic(graph, targetId, destinationId)));
                     }
                 }
             }

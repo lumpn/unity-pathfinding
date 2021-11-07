@@ -4,7 +4,7 @@
 //----------------------------------------
 namespace Lumpn.Pathfinding
 {
-    internal struct NodeState
+    internal struct NodeInfo
     {
         public int parentId;
         public bool explored;
