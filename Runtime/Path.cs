@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lumpn.Graph
+namespace Lumpn.Pathfinding
 {
     public sealed class Path : IEnumerable<int>
     {

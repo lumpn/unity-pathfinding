@@ -17,4 +17,3 @@ public sealed class Node
         this.position = position;
     }
 }
-

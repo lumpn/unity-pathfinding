@@ -2,7 +2,7 @@
 // MIT License
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
-namespace Lumpn.Graph
+namespace Lumpn.Pathfinding
 {
     public struct Edge
     {

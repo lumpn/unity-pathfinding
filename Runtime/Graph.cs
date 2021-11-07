@@ -4,7 +4,7 @@
 //----------------------------------------
 using System.Collections.Generic;
 
-namespace Lumpn.Graph
+namespace Lumpn.Pathfinding
 {
     public sealed class Graph : IGraph
     {

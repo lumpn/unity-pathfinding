@@ -4,7 +4,7 @@
 //----------------------------------------
 using System.Collections;
 using System.Collections.Generic;
-using Lumpn.Graph;
+using Lumpn.Pathfinding;
 using UnityEngine;
 
 public class Demo : MonoBehaviour

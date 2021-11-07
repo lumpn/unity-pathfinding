@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lumpn.Graph
+namespace Lumpn.Pathfinding
 {
     /// Minimum heap
     internal sealed class Heap<T>
