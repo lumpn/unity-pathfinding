@@ -1,2 +1,2 @@
-# unity-astar
-Graph-based A* search
+# unity-pathfinding
+Graph-based pathfinding algorithms
