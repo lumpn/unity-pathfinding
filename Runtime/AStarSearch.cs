@@ -3,7 +3,6 @@
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
-using Lumpn.Pathfinding.AStar;
 
 namespace Lumpn.Pathfinding
 {
@@ -12,6 +11,9 @@ namespace Lumpn.Pathfinding
         private static readonly NodeComparer comparer = new NodeComparer();
 
         public delegate float Heuristic(IGraph graph, int startId, int destinationId);
+
+        private bool[] explored;
+        private int[] parents;
 
         public Path Search(IGraph graph, int startId, int destinationId, Heuristic heuristic)
         {

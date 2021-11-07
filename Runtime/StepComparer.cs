@@ -4,7 +4,7 @@
 //----------------------------------------
 using System.Collections.Generic;
 
-namespace Lumpn.Pathfinding.AStar
+namespace Lumpn.Pathfinding
 {
     internal sealed class NodeComparer : IComparer<Node>
     {
