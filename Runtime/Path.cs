@@ -8,22 +8,22 @@ using System.Linq;
 
 namespace Lumpn.Pathfinding
 {
-    public sealed class Path : IEnumerable<int>
+    public sealed class Path : IEnumerable<INode>
     {
-        public static readonly Path invalid = new Path(-1f, Enumerable.Empty<int>());
+        public static readonly Path invalid = new Path(-1f, Enumerable.Empty<INode>());
 
-        private readonly List<int> nodes = new List<int>();
+        private readonly List<INode> nodes = new List<INode>();
         public readonly float cost;
 
         public int length => nodes.Count;
 
-        public Path(float cost, IEnumerable<int> nodes)
+        public Path(float cost, IEnumerable<INode> nodes)
         {
             this.cost = cost;
             this.nodes.AddRange(nodes);
         }
 
-        public IEnumerator<int> GetEnumerator()
+        public IEnumerator<INode> GetEnumerator()
         {
             return nodes.GetEnumerator();
         }

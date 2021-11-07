@@ -2,17 +2,16 @@
 // MIT License
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
+using Lumpn.Pathfinding;
 using UnityEngine;
 
-public sealed class Node
+public sealed class Node : INode
 {
-    public readonly int id;
     public readonly string name;
     public readonly Vector3 position;
 
-    public Node(int id, string name, Vector3 position)
+    public Node(string name, Vector3 position)
     {
-        this.id = id;
         this.name = name;
         this.position = position;
     }

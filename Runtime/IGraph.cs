@@ -10,6 +10,8 @@ namespace Lumpn.Pathfinding
     {
         int nodeCount { get; }
 
+        INode GetNode(int nodeId);
+
         IEnumerable<Edge> GetEdges(int nodeId);
     }
 }

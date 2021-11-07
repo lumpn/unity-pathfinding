@@ -41,7 +41,7 @@ namespace Lumpn.Pathfinding
 
                 if (nodeId == destinationId)
                 {
-                    var path = ReconstructPath(nodeId, entry.cost, parents);
+                    var path = ReconstructPath(graph, nodeId, entry.cost, parents);
                     return path;
                 }
 
@@ -59,12 +59,13 @@ namespace Lumpn.Pathfinding
             return Path.invalid;
         }
 
-        private static Path ReconstructPath(int lastId, float cost, int[] parents)
+        private static Path ReconstructPath(IGraph graph, int lastId, float cost, int[] parents)
         {
-            var nodes = new List<int>();
+            var nodes = new List<INode>();
             for (var id = lastId; id >= 0; id = parents[id])
             {
-                nodes.Add(id);
+                var node = graph.GetNode(id);
+                nodes.Add(node);
             }
             nodes.Reverse();
 
