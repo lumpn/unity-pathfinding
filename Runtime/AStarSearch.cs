@@ -3,6 +3,7 @@
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
+using System;
 
 namespace Lumpn.Pathfinding
 {
@@ -12,27 +13,36 @@ namespace Lumpn.Pathfinding
 
         public delegate float Heuristic(IGraph graph, int startId, int destinationId);
 
-        public Path Search(IGraph graph, int startId, int destinationId, Heuristic heuristic)
+        private readonly Heap<Step> queue;
+        private int[] parents;
+
+        public AStarSearch(int initialCapacity)
+        {
+            this.queue = new Heap<Step>(comparer, initialCapacity);
+        }
+
+        public Path FindPath(IGraph graph, int startId, int destinationId, Heuristic heuristic)
         {
             var nodeCount = graph.nodeCount;
-            var parents = new int[nodeCount];
-
-            var queue = new Heap<Step>(comparer, graph.nodeCount);
+            Array.Resize(ref parents, nodeCount);
+            Array.Clear(parents, 0, nodeCount);
 
             queue.Push(new Step(startId, -1, 0f, heuristic(graph, startId, destinationId)));
 
             while (queue.Count > 0)
             {
-                var entry = queue.Pop();
-                var nodeId = entry.nodeId;
+                var step = queue.Pop();
+                var nodeId = step.nodeId;
 
                 if (parents[nodeId] > 0) continue;
-                parents[nodeId] = entry.parentId + 1;
+                parents[nodeId] = step.parentId + 2;
+
+                var nodeCost = step.cost;
 
                 if (nodeId == destinationId)
                 {
-                    var path = ReconstructPath(graph, nodeId, entry.cost, parents);
-                    return path;
+                    queue.Clear();
+                    return ReconstructPath(graph, nodeId, nodeCost, parents);
                 }
 
                 foreach (var edge in graph.GetEdges(nodeId))
@@ -40,7 +50,7 @@ namespace Lumpn.Pathfinding
                     var targetId = edge.targetNodeId;
                     if (parents[targetId] <= 0)
                     {
-                        var cost = entry.cost + edge.cost;
+                        var cost = nodeCost + edge.cost;
                         queue.Push(new Step(targetId, nodeId, cost, heuristic(graph, targetId, destinationId)));
                     }
                 }
@@ -49,12 +59,12 @@ namespace Lumpn.Pathfinding
             return Path.invalid;
         }
 
-        private static Path ReconstructPath(IGraph graph, int lastId, float cost, int[] parents)
+        private static Path ReconstructPath(IGraph graph, int lastNodeId, float cost, int[] parents)
         {
             var nodes = new List<INode>();
-            for (var id = lastId; id >= 0; id = parents[id])
+            for (var nodeId = lastNodeId; nodeId >= 0; nodeId = parents[nodeId] - 2)
             {
-                var node = graph.GetNode(id);
+                var node = graph.GetNode(nodeId);
                 nodes.Add(node);
             }
             nodes.Reverse();

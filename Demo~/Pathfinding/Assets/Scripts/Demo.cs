@@ -64,7 +64,7 @@ public class Demo : MonoBehaviour
         var destinationId = grid[gridSize.x - 1, gridSize.y - 1];
 
         Path path;
-        path = Search(new AStarSearch(), graph, startId, destinationId);
+        path = Search(new AStarSearch(graph.nodeCount), graph, startId, destinationId);
 
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
 
@@ -87,7 +87,7 @@ public class Demo : MonoBehaviour
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
 
-        var path = algorithm.Search(graph, startId, destinationId, Heuristic);
+        var path = algorithm.FindPath(graph, startId, destinationId, Heuristic);
 
         watch.Stop();
         Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);
