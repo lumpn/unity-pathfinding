@@ -7,20 +7,13 @@ using Lumpn.Pathfinding.AStar;
 
 namespace Lumpn.Pathfinding
 {
-    public sealed class AStarSearch : ISearch
+    public sealed class AStarSearch
     {
         private static readonly NodeComparer comparer = new NodeComparer();
 
         public delegate float Heuristic(IGraph graph, int startId, int destinationId);
 
-        private readonly Heuristic heuristic;
-
-        public AStarSearch(Heuristic heuristic)
-        {
-            this.heuristic = heuristic;
-        }
-
-        public Path Search(IGraph graph, int startId, int destinationId)
+        public Path Search(IGraph graph, int startId, int destinationId, Heuristic heuristic)
         {
             var nodeCount = graph.nodeCount;
             var explored = new bool[nodeCount];

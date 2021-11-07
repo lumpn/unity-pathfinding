@@ -64,8 +64,7 @@ public class Demo : MonoBehaviour
         var destinationId = grid[gridSize.x - 1, gridSize.y - 1];
 
         Path path;
-        path = Search(new DijkstraSearch(), graph, startId, destinationId);
-        path = Search(new AStarSearch(Heuristic), graph, startId, destinationId);
+        path = Search(new AStarSearch(), graph, startId, destinationId);
 
         Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
 
@@ -80,15 +79,15 @@ public class Demo : MonoBehaviour
     {
         var u = (Node)graph.GetNode(a);
         var v = (Node)graph.GetNode(b);
-        return Vector2.Distance(u.position, v.position);
+        return Vector3.Distance(u.position, v.position);
     }
 
-    private static Path Search(ISearch algorithm, IGraph graph, int startId, int destinationId)
+    private static Path Search(AStarSearch algorithm, IGraph graph, int startId, int destinationId)
     {
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
 
-        var path = algorithm.Search(graph, startId, destinationId);
+        var path = algorithm.Search(graph, startId, destinationId, Heuristic);
 
         watch.Stop();
         Debug.LogFormat("Search took {0} ms", watch.ElapsedMilliseconds);
