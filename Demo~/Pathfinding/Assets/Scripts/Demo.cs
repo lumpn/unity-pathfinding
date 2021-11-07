@@ -3,6 +3,7 @@
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
+using System.Linq;
 using Lumpn.Pathfinding;
 using UnityEngine;
 
@@ -68,29 +69,16 @@ public class Demo : MonoBehaviour
         var startId = grid[0, 0];
         var destinationId = grid[gridSize.x - 1, gridSize.y - 1];
 
+        // run search
         var search = new AStarSearch(graph.nodeCount);
-        Run(search, graph, startId, destinationId, NoHeuristic);
-        var path = Run(search, graph, startId, destinationId, DistanceHeuristic);
+        var path1 = Run(search, graph, startId, destinationId, NoHeuristic);
+        var path2 = Run(search, graph, startId, destinationId, DistanceHeuristic);
+        var path = path2;
 
-        Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
-
+        // print path
         trace.Clear();
-        foreach (Node node in path)
-        {
-            trace.Add(node.position);
-        }
-    }
-
-    private static float NoHeuristic(IGraph graph, int a, int b)
-    {
-        return 0f;
-    }
-
-    private static float DistanceHeuristic(IGraph graph, int a, int b)
-    {
-        var u = (Node)graph.GetNode(a);
-        var v = (Node)graph.GetNode(b);
-        return Vector3.Distance(u.position, v.position);
+        trace.AddRange(path.Cast<Node>().Select(p => p.position));
+        Debug.LogFormat("Path length {0}, cost {1}", path.length, path.cost);
     }
 
     private static float NoHeuristic(IGraph graph, INode a, INode b)
