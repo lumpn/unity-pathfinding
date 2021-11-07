@@ -78,7 +78,7 @@ public class Demo : MonoBehaviour
         };
 
         Path path;
-        path = Search(new Dijkstra(), graph, start, end);
+        path = Search(new DijkstraSearch(), graph, start, end);
         path = Search(new AStar(heuristic), graph, start, end);
 
         if (path == null)

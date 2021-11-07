@@ -3,35 +3,12 @@
 // Copyright(c) 2021 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
+using Lumpn.Pathfinding.Dijkstra;
 
 namespace Lumpn.Pathfinding
 {
-    public sealed class Dijkstra : ISearch
+    public sealed class DijkstraSearch : ISearch
     {
-        private struct Node
-        {
-            public readonly int id;
-            public readonly int parentId;
-            public readonly float cost;
-
-            public Node(int nodeId, int parentId, float cost)
-            {
-                this.id = nodeId;
-                this.parentId = parentId;
-                this.cost = cost;
-            }
-        }
-
-        private sealed class NodeComparer : IComparer<Node>
-        {
-            private static readonly IComparer<float> costComparer = Comparer<float>.Default;
-
-            public int Compare(Node x, Node y)
-            {
-                return costComparer.Compare(x.cost, y.cost);
-            }
-        }
-
         private static readonly NodeComparer comparer = new NodeComparer();
 
         public Path Search(IGraph graph, int startId, int destinationId)
